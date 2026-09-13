@@ -1,18 +1,43 @@
-.wz-notifier-widget {
+.wz-notifier-bell {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 14px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+#wz-notifier-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483647;
+  width: 280px;
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #d7dde6;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  padding: 12px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 13px;
+}
+
+.wz-notifier-panel-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.wz-notifier-panel-row {
   display: flex;
-  align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  margin-top: 6px;
-  padding: 4px 6px;
-  background: rgba(37, 99, 235, 0.08);
-  border: 1px solid rgba(37, 99, 235, 0.35);
-  border-radius: 6px;
+  margin-bottom: 8px;
 }
 
 .wz-notifier-input {
+  flex: 1 1 auto;
   font-size: 12px;
-  padding: 2px 4px;
+  padding: 4px 6px;
   border-radius: 4px;
   border: 1px solid #b9c4d9;
   background: #fff;
@@ -21,7 +46,7 @@
 
 .wz-notifier-btn {
   font-size: 12px;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 4px;
   border: 1px solid #2563eb;
   background: #2563eb;
@@ -32,4 +57,9 @@
 
 .wz-notifier-btn:hover {
   background: #1d4ed8;
+}
+
+.wz-notifier-status {
+  font-size: 12px;
+  opacity: 0.75;
 }
