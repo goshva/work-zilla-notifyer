@@ -1,0 +1,14 @@
+{
+  "name": "work-zilla-notifyer",
+  "version": "1.0.0",
+  "description": "Локальный веб-инструмент: показывает мои задания \"В работе\" на work-zilla.com и создаёт .ics-напоминания о проверке публикации",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
