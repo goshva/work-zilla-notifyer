@@ -1,0 +1,35 @@
+.wz-notifier-widget {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding: 4px 6px;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  border-radius: 6px;
+}
+
+.wz-notifier-input {
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid #b9c4d9;
+  background: #fff;
+  color: #1a1a1a;
+}
+
+.wz-notifier-btn {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.wz-notifier-btn:hover {
+  background: #1d4ed8;
+}

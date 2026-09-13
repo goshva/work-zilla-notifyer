@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Work-Zilla: напоминание о проверке публикации",
+  "version": "1.0.0",
+  "description": "Добавляет к каждому заданию в разделе \"В работе\" кнопку скачивания .ics-напоминания (название, текст задания, ссылка) с выбором времени проверки.",
+  "content_scripts": [
+    {
+      "matches": ["https://client.work-zilla.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
