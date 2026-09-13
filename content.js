@@ -17,11 +17,13 @@
     return readJson(REMINDERS_KEY);
   }
   function getReminder(orderId) {
-    return getReminders()[orderId];
+    const r = getReminders()[orderId];
+    if (!r) return undefined;
+    return typeof r === 'string' ? { when: r, link: '' } : r;
   }
-  function setReminder(orderId, whenValue) {
+  function setReminder(orderId, whenValue, link) {
     const all = getReminders();
-    all[orderId] = whenValue;
+    all[orderId] = { when: whenValue, link: link || '' };
     writeJson(REMINDERS_KEY, all);
   }
   function getCachedTask(orderId) {
@@ -65,8 +67,10 @@
     if (task.partner) descLines.push(`Заказчик: ${task.partner}`);
     if (task.price) descLines.push(`Сумма: ${task.price}`);
     if (task.lastMessage) descLines.push(`Текст: ${task.lastMessage}`);
+    if (task.link) descLines.push(`Публикация: ${task.link}`);
     descLines.push(task.url);
     const description = descLines.join('\n');
+    const icsUrl = task.link || task.url;
 
     return [
       'BEGIN:VCALENDAR',
@@ -78,7 +82,7 @@
       `DTSTART:${toIcsUtc(start)}`,
       `SUMMARY:${escapeIcsText(summary)}`,
       `DESCRIPTION:${escapeIcsText(description)}`,
-      `URL:${task.url}`,
+      `URL:${icsUrl}`,
       'BEGIN:VALARM',
       'TRIGGER:PT0M',
       'ACTION:DISPLAY',
@@ -137,9 +141,11 @@
       header.appendChild(bell);
     }
     const reminder = getReminder(orderId);
-    if (reminder) {
+    if (reminder && reminder.when) {
       bell.hidden = false;
-      bell.title = `Напоминание на ${new Date(reminder).toLocaleString('ru-RU')}`;
+      let title = `Напоминание на ${new Date(reminder.when).toLocaleString('ru-RU')}`;
+      if (reminder.link) title += `\nСсылка: ${reminder.link}`;
+      bell.title = title;
     } else {
       bell.hidden = true;
     }
@@ -161,13 +167,23 @@
 
   // ---- страница чата задания: полноценный выбор даты/времени ----
 
+  function normalizeLink(value) {
+    const link = value.trim();
+    if (!link) return '';
+    return /^https?:\/\//i.test(link) ? link : `https://${link}`;
+  }
+
   function renderPanelStatus(panel, orderId) {
     const input = panel.querySelector('.wz-notifier-input');
+    const linkInput = panel.querySelector('.wz-notifier-link-input');
     const status = panel.querySelector('.wz-notifier-status');
     const reminder = getReminder(orderId);
-    if (reminder) {
-      input.value = reminder;
-      status.textContent = `🔔 Напоминание установлено на ${new Date(reminder).toLocaleString('ru-RU')}`;
+    if (reminder && reminder.when) {
+      input.value = reminder.when;
+      linkInput.value = reminder.link || '';
+      const parts = [`🔔 Напоминание на ${new Date(reminder.when).toLocaleString('ru-RU')}`];
+      if (reminder.link) parts.push(`ссылка: ${reminder.link}`);
+      status.textContent = parts.join(', ');
     } else {
       if (!input.value) input.value = defaultWhenValue();
       status.textContent = 'Напоминание пока не установлено';
@@ -183,12 +199,22 @@
     title.className = 'wz-notifier-panel-title';
     title.textContent = 'Напоминание проверить публикацию';
 
-    const row = document.createElement('div');
-    row.className = 'wz-notifier-panel-row';
+    const dateLabel = document.createElement('label');
+    dateLabel.className = 'wz-notifier-label';
+    dateLabel.textContent = 'Когда проверить';
 
     const input = document.createElement('input');
     input.type = 'datetime-local';
     input.className = 'wz-notifier-input';
+
+    const linkLabel = document.createElement('label');
+    linkLabel.className = 'wz-notifier-label';
+    linkLabel.textContent = 'Ссылка на публикацию (необязательно)';
+
+    const linkInput = document.createElement('input');
+    linkInput.type = 'text';
+    linkInput.className = 'wz-notifier-link-input';
+    linkInput.placeholder = 'https://...';
 
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -203,25 +229,28 @@
         alert('Укажите дату и время проверки.');
         return;
       }
-      setReminder(orderId, input.value);
-      const task =
-        getCachedTask(orderId) ||
-        {
-          orderId,
-          url: location.href,
-          title: document.title || 'Задание',
-          partner: '',
-          price: '',
-          lastMessage: '',
-        };
+      const link = normalizeLink(linkInput.value);
+      setReminder(orderId, input.value, link);
+      const cached = getCachedTask(orderId);
+      const task = {
+        orderId,
+        url: cached?.url || location.href,
+        title: cached?.title || document.title || 'Задание',
+        partner: cached?.partner || '',
+        price: cached?.price || '',
+        lastMessage: cached?.lastMessage || '',
+        link,
+      };
       downloadIcs(task, input.value);
       renderPanelStatus(panel, orderId);
     });
 
-    row.appendChild(input);
-    row.appendChild(btn);
     panel.appendChild(title);
-    panel.appendChild(row);
+    panel.appendChild(dateLabel);
+    panel.appendChild(input);
+    panel.appendChild(linkLabel);
+    panel.appendChild(linkInput);
+    panel.appendChild(btn);
     panel.appendChild(status);
 
     renderPanelStatus(panel, orderId);
