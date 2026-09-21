@@ -1,0 +1,18 @@
+server:
+  address: localhost
+  port: 8314
+database:
+  path: d:\soft\work-zilla-notifyer\build\ib
+infobase:
+  name: DefAlias
+  distribute-licenses: yes
+http:
+  - base: /ib
+    odata:
+      publish: yes
+    web-services:
+      publish-by-default: yes
+      publish-extensions-by-default: yes
+    http-services:
+      publish-by-default: yes
+      publish-extensions-by-default: yes
